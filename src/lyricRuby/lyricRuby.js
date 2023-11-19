@@ -1,3 +1,4 @@
+// 原作者：https://zh.moegirl.org.cn/User:東東君
 "use strict";
 $(() => {
     const { wgPageContentModel, wgAction } = mw.config.get();
@@ -150,7 +151,7 @@ $(() => {
                      */
                     const ruby = (kanji, kana) => `{{photrans|${ kanji }|${ kana }}}`;
                     text = text.replace(escapes, (s) => { return `!UNICODE(${ escape(s).replace("%", "#") })`; });
-                    $("#ruby-editor-body").attr("disabled", "disabled");
+                    $("#ruby-editor-body,#ruby-update").attr("disabled", "disabled");
                     $.ajax({
                         type: "post",
                         url: "https://api.nzh21.site/yahooapis/FuriganaService/V2/furigana",

@@ -1,8 +1,10 @@
 /**
+ * only for zh moegirlPedia
  * 把moeskin当移动版皮肤，vector当桌面端皮肤
  * <pre>
  */
- (async (mw) => {
+"use strict";
+(async (mw) => {
     await Promise.all([mw.loader.using('user.options'), $.ready]);
     // 判断用户的桌面版皮肤
     if (mw.user.options.get('skin') !== 'vector') {
