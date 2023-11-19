@@ -1,0 +1,25 @@
+{
+    "ResourceLoader": true,
+    "hidden": false,
+    "default": false,
+    "supportsUrlLoad": false,
+    "targets": [],
+    "skins": ["vector"],
+    "actions": ["edit"],
+    "type": "general",
+    "package": false,
+    "requiresES6": false,
+    "namespaces":[0,2],
+    "contentModels":"wikitext",
+    "rights": [
+        "edit"
+    ],
+    "peers": [],
+    "dependencies": [
+        "mediawiki.util",
+        "oojs-ui",
+        "jquery.textSelection",
+        "vue"
+    ],
+    "_section": "editing"
+}
