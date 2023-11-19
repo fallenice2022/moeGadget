@@ -31,14 +31,6 @@
 .ruby-editor-body, .ruby-btn-group{
     margin: 10px;
 }
-.diff-ruby{
-    z-index: 101;
-    top:auto!important;
-}
-.ruby-left .oo-ui-popupWidget-body{
-    height:50px!important;
-    overflow-y: hidden!important;
-}
 .ruby-editor, .ruby-view{
     width: 450px;
     height: 80%;

@@ -1,4 +1,4 @@
-// 原作者：https://zh.moegirl.org.cn/User:東東君
+// 原作者：https://zh.moegirl.org.cn/User:東東君 since 1.38 mw version
 "use strict";
 $(() => {
     const { wgPageContentModel, wgAction } = mw.config.get();
@@ -21,7 +21,7 @@ $(() => {
                 righttext: "",
             };
         },
-        //内容
+        //框架
         render() {
             const kakikotoba = h("label", {
                 "for": "ruby-kakikotoba",
@@ -37,7 +37,7 @@ $(() => {
                 id: "ruby-editor-body",
                 lang: "ja",
                 value: this.lefttext,
-                onKeyup: this.changeLyric,
+                onChange: this.changeLyric,
                 onMouseup: this.openDiffRuby,
             });
             const btngroup = h("div", { "class": "ruby-btn-group" }, [
@@ -68,7 +68,7 @@ $(() => {
                 }, "打开转换列表页面"),
                 h("button", {
                     id:"ruby-sign-diff",
-                    title: "标注写作xx读作oo",
+                    title: "标注选中文字的特殊读音",
                     disabled:"disabled",
                     onClick:this.diffRuby,
                 }, "特殊读音标记"),
@@ -91,12 +91,12 @@ $(() => {
         },
         methods: {
             openDiffRuby(){
-                $("#ruby-sign-diff").removeAttr("disabled");
+                window.getSelection().toString() !== "" && $("#ruby-sign-diff").removeAttr("disabled");
             },
             //标注写作xx读作oo
             async diffRuby() {
                 const text = window.getSelection().toString();
-                if (text.search(/[\u3041-\u309f\u30a0-\u30ff]/) === -1) {
+                if (!/[\u3041-\u309f\u30a0-\u30ff]/.test(text)) {
                     const sing = await OO.ui.prompt("请输入它不一样的读音", {
                         textInput: { placeholder: "写作xx读作oo" },
                     });
@@ -107,7 +107,6 @@ $(() => {
                             post: `|${sing}}}`,
                         });
                         this.lefttext = $("#ruby-editor-body").val();
-                        $("#ruby-update").removeAttr("disabled");
                     } else {
                         mw.notify("您没有输入读音", { type: "error" });
                     }
