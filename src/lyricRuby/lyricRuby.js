@@ -193,24 +193,22 @@ $(() => {
                                 }
                                 return false;
                             }
-                            let result = wordList.reduce((result, item, num) => {
-                                return result + (() => {
-                                    if (item.furigana) {
-                                        if (item.subword) {
-                                            return item.subword.map((item, num) => {
-                                                if (!diffruby(num) && item.furigana !== item.surface) {
-                                                    return ruby(item.surface, item.furigana);
-                                                }
-                                                return item.surface;
-                                            }).join("");
-                                        }else if (diffruby(num)) {
+                            let result = wordList.reduce((result, item, num) => result + (() => {
+                                if (item.furigana) {
+                                    if (item.subword) {
+                                        return item.subword.map((item, num) => {
+                                            if (!diffruby(num) && item.furigana !== item.surface) {
+                                                return ruby(item.surface, item.furigana);
+                                            }
                                             return item.surface;
-                                        }
-                                        return ruby(item.surface, item.furigana);
+                                        }).join("");
+                                    } else if (diffruby(num)) {
+                                        return item.surface;
                                     }
-                                    return item.surface;
-                                })();
-                            }, "");
+                                    return ruby(item.surface, item.furigana);
+                                }
+                                return item.surface;
+                            })(), "");
                             /**
                              * @param {string[][]} patterns 
                              */
