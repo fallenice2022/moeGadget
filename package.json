@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "@types/jqueryui": "^1.12.19",
+    "@types/oojs-ui": "^0.47.3",
+    "types-mediawiki": "^1.4.0"
+  }
+}

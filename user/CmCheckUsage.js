@@ -19,11 +19,10 @@
                 prop:"fileusage",
                 fulimit:1,
                 titles:PageName,
-            });
+            }, { retry:3 });
             return data.query.pages;
         } catch (error) {
             console.error("[API Log]", error);
-            await check(sitename);
         }  
     }
     /**

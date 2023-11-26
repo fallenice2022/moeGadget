@@ -126,13 +126,12 @@ $(() => {
                 const codeContent = wikiEditor.val();
                 if (!/\{\{[Ll]yricsKai/.test(codeContent)) {
                     mw.notify(messages.notFound, { type: "error" });
+                } else if (!codeContent.match(lyricskai)) {
+                    mw.notify(messages.badFormat, { type: "error" });
                 } else {
-                    if (!codeContent.match(lyricskai)) {
-                        mw.notify(messages.badFormat, { type: "error" });
-                    } else {
-                        this.lefttext = codeContent.match(lyricskai)[2].trim();
-                    }
+                    this.lefttext = codeContent.match(lyricskai)[2].trim();
                 }
+
             },
             async execute() {
                 const resultUrl = await $.get("https://zh.moegirl.org.cn/User:東東君/js/ruby.js/转换列表?action=render"),
@@ -148,7 +147,7 @@ $(() => {
                      * @param {string} kana 
                      */
                     const ruby = (kanji, kana) => `{{photrans|${kanji}|${kana}}}`;
-                    text = text.replace(escapes, (s) => { return `!UNICODE(${escape(s).replace("%", "#")})`; });
+                    text = text.replace(escapes, (s) => `!UNICODE(${escape(s).replace("%", "#")})`);
                     $("#ruby-editor-body,#ruby-update").attr("disabled", "disabled");
                     $.ajax({
                         type: "post",
@@ -193,7 +192,7 @@ $(() => {
                                 }
                                 return false;
                             }
-                            let result = wordList.reduce((result, item, num) => result + (() => {
+                            let result = wordList.reduce((_, item, num) => {
                                 if (item.furigana) {
                                     if (item.subword) {
                                         return item.subword.map((item, num) => {
@@ -208,7 +207,7 @@ $(() => {
                                     return ruby(item.surface, item.furigana);
                                 }
                                 return item.surface;
-                            })(), "");
+                            }, "");
                             /**
                              * @param {string[][]} patterns 
                              */

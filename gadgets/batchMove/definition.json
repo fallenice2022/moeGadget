@@ -1,0 +1,24 @@
+{
+    "ResourceLoader": true,
+    "hidden": false,
+    "default": false,
+    "supportsUrlLoad": false,
+    "targets": [],
+    "skins": [],
+    "actions": ["view"],
+    "type": "general",
+    "package": false,
+    "requiresES6": false,
+    "namespaces":[],
+    "contentModels":"",
+    "rights": [
+        "move"
+    ],
+    "peers": [],
+    "dependencies": [
+        "oojs-ui",
+        "mediawiki.api",
+        "ext.gadget.site-lib"
+    ],
+    "_section": "editing"
+}

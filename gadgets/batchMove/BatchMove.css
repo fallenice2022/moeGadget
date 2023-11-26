@@ -1,0 +1,8 @@
+.bm-input{
+    display: inline-block;
+    width: 50%;
+}
+#move-talkpage, #move-no-redirect{
+    display: inline-block;
+    margin-right: 1.5em;
+}
