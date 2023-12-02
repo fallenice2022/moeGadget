@@ -7,8 +7,8 @@
     "skins": ["vector"],
     "actions": ["edit"],
     "type": "general",
-    "package": false,
-    "requiresES6": false,
+    "package": true,
+    "requiresES6": true,
     "namespaces":[0,2],
     "contentModels":"wikitext",
     "rights": [

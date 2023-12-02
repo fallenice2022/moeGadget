@@ -1,9 +1,10 @@
 // 原作者：https://zh.moegirl.org.cn/User:東東君 since 1.38 mw version
 "use strict";
 $(() => {
-    const { wgPageContentModel, wgAction } = mw.config.get();
+    // eslint-disable-next-line no-undef
+    const { common, kakikotoba } = require("./transferGroup.json");
+    const { createApp, h, defineComponent } = Vue;
     const escapes = new RegExp("[àâäèéêëîïôœùûüÿçÀÂÄÈÉÊËÎÏÔŒÙÛÜŸÇ？！·♡⸱]", "g"),
-        { createApp, h, defineComponent } = Vue,
         wikiEditor = $("#wpTextbox1"),
         messages = {
             notFound: "代码中并未找到歌词模板(LyricsKai及其衍生模板)！",
@@ -14,6 +15,12 @@ $(() => {
         },
         lyricskai = /(\{\{[Ll]yricsKai[\s\S]*?\|original=)([\s\S]*?)(\|translated)/;
     // 函数定义体
+    /**
+     * @param {string} kanji 
+     * @param {string} kana 
+     */
+    const ruby = (kanji, kana) => `{{photrans|${kanji}|${kana}}}`;
+    // vue3
     const App = defineComponent({
         data() {
             return {
@@ -63,7 +70,11 @@ $(() => {
                 h("button", {
                     title: "由于注音API返回一些读音在歌词中并不常用，需要将其替换为常用读音，你可以在转换列表中添加新的转换规则",
                     onClick: () => {
-                        window.open("https://zh.moegirl.org.cn/User:東東君/js/ruby.js/转换列表", "_blank");
+                        if (mw.config.get("wgUserGroups").includes("interface-admin")) {
+                            window.open("/MediaWiki:Gadget-lyricRuby-transferGroup.json", "_blank");
+                        } else {
+                            window.open("/MediaWiki_talk:Gadget-lyricRuby-transferGroup.json", "_blank");
+                        }
                     },
                 }, "打开转换列表页面"),
                 h("button", {
@@ -133,20 +144,11 @@ $(() => {
                 }
 
             },
-            async execute() {
-                const resultUrl = await $.get("https://zh.moegirl.org.cn/User:東東君/js/ruby.js/转换列表?action=render"),
-                    findRubyTransferGroupByName = name => Array.from($(resultUrl).find(`#rubyTransferGroup-${name} > li`)).map(item => item.textContent.split("、")),
-                    common = findRubyTransferGroupByName("common"),
-                    kakikotoba = findRubyTransferGroupByName("kakikotoba");
+            execute() {
                 let text = wikiEditor.val().trim();
                 if (text.length === 0) {
                     mw.notify(messages.emptyText, { type: "error" });
                 } else {
-                    /**
-                     * @param {string} kanji 
-                     * @param {string} kana 
-                     */
-                    const ruby = (kanji, kana) => `{{photrans|${kanji}|${kana}}}`;
                     text = text.replace(escapes, (s) => `!UNICODE(${escape(s).replace("%", "#")})`);
                     $("#ruby-editor-body,#ruby-update").attr("disabled", "disabled");
                     $.ajax({
@@ -247,15 +249,13 @@ $(() => {
         },
     });
     //函数执行体
-    if (wgPageContentModel === "wikitext" && ["edit", "submit"].includes(wgAction)) {
-        mw.util.addPortletLink("p-cactions", "javascript:void(0)", "注音工具", "btn-ruby", "为日语歌词进行注音");
-        $("#btn-ruby").on("click", () => {
-            if (!document.getElementById("widget-lyricRuby")) {
-                $(document.body).append('<div id="widget-lyricRuby" style="display:none"></div>');
-                createApp(App).mount("#widget-lyricRuby");
-            }
-            $("#widget-lyricRuby").fadeIn(200);
-        });
-    }
+    mw.util.addPortletLink("p-cactions", "javascript:void(0)", "注音工具", "btn-ruby", "为日语歌词进行注音");
+    $("#btn-ruby").on("click", () => {
+        if (!document.getElementById("widget-lyricRuby")) {
+            $(document.body).append('<div id="widget-lyricRuby" style="display:none"></div>');
+            createApp(App).mount("#widget-lyricRuby");
+        }
+        $("#widget-lyricRuby").fadeIn(200);
+    });
 
 });
