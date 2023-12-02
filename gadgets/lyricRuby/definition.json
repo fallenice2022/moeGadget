@@ -4,13 +4,13 @@
     "default": false,
     "supportsUrlLoad": false,
     "targets": [],
-    "skins": ["vector"],
+    "skins": [],
     "actions": ["edit"],
     "type": "general",
     "package": true,
     "requiresES6": true,
     "namespaces":[0,2],
-    "contentModels":"wikitext",
+    "contentModels":["wikitext"],
     "rights": [
         "edit"
     ],

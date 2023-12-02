@@ -2,7 +2,7 @@
 "use strict";
 $(() => {
     // eslint-disable-next-line no-undef
-    const { common, kakikotoba } = require("./transferGroup.json");
+    const { common, kakikotoba } = require("./lyricRuby-transferGroup.json");
     const { createApp, h, defineComponent } = Vue;
     const escapes = new RegExp("[àâäèéêëîïôœùûüÿçÀÂÄÈÉÊËÎÏÔŒÙÛÜŸÇ？！·♡⸱]", "g"),
         wikiEditor = $("#wpTextbox1"),
@@ -117,7 +117,7 @@ $(() => {
                             peri: text,
                             post: `|${sing}}}`,
                         });
-                        this.lefttext = $("#ruby-editor-body").val();
+                        this.changeLyric();
                     } else {
                         mw.notify("您没有输入读音", { type: "error" });
                     }
