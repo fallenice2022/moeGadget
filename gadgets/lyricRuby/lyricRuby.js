@@ -25,7 +25,6 @@ $(() => {
         data() {
             return {
                 lefttext: "",
-                righttext: "",
             };
         },
         //框架
@@ -145,7 +144,7 @@ $(() => {
 
             },
             execute() {
-                let text = wikiEditor.val().trim();
+                let text = this.lefttext.trim();
                 if (text.length === 0) {
                     mw.notify(messages.emptyText, { type: "error" });
                 } else {
@@ -181,35 +180,36 @@ $(() => {
                              * @param {number} num
                              */
                             function diffruby(num) {
-                                let text = "";
-                                for (let i = 1; i < 5; i++) {
-                                    if (num - i > -1 && wordList[num - i].surface.search(/([a-z]|\|)/i) + 1) {
-                                        text += wordList[num - i].surface;
+                                const text = [];
+                                for (let i = 1; i < 3; i++) {
+                                    if (num - i > 2) {
+                                        text.push(wordList[num - i].surface);
                                     } else {
                                         break;
                                     }
                                 }
-                                if (text === "uby|") {
+                                if (text.reverse().join("") === "ruby|") {
                                     return true;
                                 }
                                 return false;
                             }
-                            let result = wordList.reduce((_, item, num) => {
+                            let result = wordList.reduce((result, item, num) => result + (() => {
                                 if (item.furigana) {
                                     if (item.subword) {
-                                        return item.subword.map((item, num) => {
-                                            if (!diffruby(num) && item.furigana !== item.surface) {
+                                        return item.subword.map((item) => {
+                                            if(item.furigana !== item.surface){
                                                 return ruby(item.surface, item.furigana);
                                             }
                                             return item.surface;
                                         }).join("");
-                                    } else if (diffruby(num)) {
+                                    }
+                                    if(diffruby(wordList, num)){
                                         return item.surface;
                                     }
                                     return ruby(item.surface, item.furigana);
                                 }
                                 return item.surface;
-                            }, "");
+                            })(), "");
                             /**
                              * @param {string[][]} patterns 
                              */
@@ -223,7 +223,7 @@ $(() => {
                             $("#ruby-kakikotoba").prop("checked") && rubyReplace(kakikotoba);
 
                             this.lefttext = result.replace(/!UNICODE\((.+?)\)/g, (s, s1) => unescape(s1.replace("#", "%")));
-                            this.righttext = result.replace(/\n/g, "<br>").replace(/\{\{photrans\|(.+?)\|(.+?)\}\}/g, "<ruby>$1<rt>$2</rt></ruby>");
+                            $(".ruby-view").html(result.replace(/\n/g, "<br>").replace(/\{\{photrans\|(.+?)\|(.+?)\}\}/g, "<ruby>$1<rt>$2</rt></ruby>"));
                             $("#ruby-update").removeAttr("disabled");
                         }
                     }).fail(() => {
