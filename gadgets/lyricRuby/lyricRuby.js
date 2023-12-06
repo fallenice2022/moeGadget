@@ -1,9 +1,9 @@
 // 原作者：https://zh.moegirl.org.cn/User:東東君 since 1.38 mw version
+/* global require*/
 "use strict";
 $(() => {
-    // eslint-disable-next-line no-undef
     const { common, kakikotoba } = require("./lyricRuby-transferGroup.json");
-    const { createApp, h, defineComponent } = Vue;
+    const { createApp, h, ref, defineComponent, unref } = Vue;
     const escapes = new RegExp("[àâäèéêëîïôœùûüÿçÀÂÄÈÉÊËÎÏÔŒÙÛÜŸÇ？！·♡⸱]", "g"),
         wikiEditor = $("#wpTextbox1"),
         messages = {
@@ -24,7 +24,14 @@ $(() => {
     const App = defineComponent({
         data() {
             return {
-                lefttext: "",
+                lefttext: ref(""),
+                checkbox: {
+                    ifkakikotoba:ref(),
+                },
+                diseditor:false,
+                disupdate:true,
+                diskakikotoba:false,
+                dissigndiff:true,
             };
         },
         //框架
@@ -36,15 +43,19 @@ $(() => {
                 h("input", {
                     type: "checkbox",
                     id: "ruby-kakikotoba",
+                    checked: this.checkbox.ifkakikotoba,
+                    onChange: $event => this.checkbox.ifkakikotoba = $event.target.checked,
+                    disabled:this.diskakikotoba,
                 }),
                 h("span", {}, "书面语注音"),
             ]);
             const editorBody = h("textarea", {
                 id: "ruby-editor-body",
                 lang: "ja",
-                value: this.lefttext,
-                onChange: this.changeLyric,
+                value: unref(this.lefttext),
+                onChange: $event => this.lefttext = $event.target.value,
                 onMouseup: this.openDiffRuby,
+                disabled:this.diseditor,
             });
             const btngroup = h("div", { "class": "ruby-btn-group" }, [
                 h("button", {
@@ -56,14 +67,14 @@ $(() => {
                     onClick: this.execute,
                 }, "添加注音"),
                 h("button", {
-                    id: "ruby-update",
+                    id:"ruby-update",
                     title: "将歌词提交至模板",
-                    disabled: "disabled",
+                    disabled: this.disupdate,
                     onClick: this.upDate,
                 }, "提交歌词"),
                 h("button", {
                     title: "复制歌词至剪切板",
-                    onClick: this.copyText,
+                    onClick:this.copyText,
                 }, "复制歌词"),
                 kakikotoba,
                 h("button", {
@@ -77,10 +88,10 @@ $(() => {
                     },
                 }, "打开转换列表页面"),
                 h("button", {
-                    id: "ruby-sign-diff",
+                    id:"ruby-sign-diff",
                     title: "标注选中文字的特殊读音",
-                    disabled: "disabled",
-                    onClick: this.diffRuby,
+                    disabled:this.dissigndiff,
+                    onClick:this.diffRuby,
                 }, "特殊读音标记"),
             ]);
             const leftEditor = h("div", {
@@ -89,7 +100,7 @@ $(() => {
             const rightView = h("div", {
                 "class": "ruby-view",
                 lang: "ja",
-            }, this.righttext);
+            });
             return [
                 h("div", {
                     id: "widget-lyricRuby-hide",
@@ -101,7 +112,9 @@ $(() => {
         },
         methods: {
             openDiffRuby() {
-                window.getSelection().toString() !== "" && $("#ruby-sign-diff").removeAttr("disabled");
+                if(window.getSelection().toString() !== "") {
+                    this.dissigndiff = false;
+                }
             },
             //标注写作xx读作oo
             async diffRuby() {
@@ -111,26 +124,22 @@ $(() => {
                         textInput: { placeholder: "写作xx读作oo" },
                     });
                     if (sing !== "") {
-                        $("#ruby-editor-body").textSelection("encapsulateSelection", {
+                        this.lefttext = $("#ruby-editor-body").textSelection("encapsulateSelection", {
                             pre: "{{ruby|",
                             peri: text,
                             post: `|${sing}}}`,
-                        });
-                        this.changeLyric();
+                        }).val();
                     } else {
                         mw.notify("您没有输入读音", { type: "error" });
                     }
                 } else {
                     mw.notify("请不要给假名注音", { type: "error" });
                 }
-                $("#ruby-sign-diff").attr("disabled", "disabled");
+                this.dissigndiff = true;
             },
             hideWidget() {
                 $("#widget-lyricRuby").fadeOut(200);
                 $("#content").css("position", "relative");
-            },
-            changeLyric() {
-                this.lefttext = $("#ruby-editor-body").val();
             },
             getText() {
                 const codeContent = wikiEditor.val();
@@ -147,9 +156,11 @@ $(() => {
                 let text = this.lefttext.trim();
                 if (text.length === 0) {
                     mw.notify(messages.emptyText, { type: "error" });
+                } else if (text.search("photrans")){
+                    mw.notify("那个，您已经完成注音了吧？", { type: "warn" });
                 } else {
-                    text = text.replace(escapes, (s) => `!UNICODE(${escape(s).replace("%", "#")})`);
-                    $("#ruby-editor-body,#ruby-update").attr("disabled", "disabled");
+                    text = text.replace(escapes, (s) => `!UNICODE(${ escape(s).replace("%", "#") })`);
+                    this.diseditor = true, this.disupdate = true, this.diskakikotoba = true;
                     $.ajax({
                         type: "post",
                         url: "https://api.nzh21.site/yahooapis/FuriganaService/V2/furigana",
@@ -169,7 +180,7 @@ $(() => {
                         }),
                         timeout: "15000",
                     }).always(() => {
-                        $("#ruby-editor-body").removeAttr("disabled");
+                        this.diseditor = false;
                     }).done((data) => {
                         if (data.Error) {
                             mw.notify(messages.badText, { type: "error" });
@@ -179,16 +190,16 @@ $(() => {
                              * 检查是否有额外的ruby模板
                              * @param {number} num
                              */
-                            function diffruby(num) {
+                            function diffruby(num){
                                 const text = [];
                                 for (let i = 1; i < 3; i++) {
-                                    if (num - i > 2) {
-                                        text.push(wordList[num - i].surface);
+                                    if(num - i > 2){
+                                        text.push(wordList[num-i].surface);
                                     } else {
                                         break;
                                     }
                                 }
-                                if (text.reverse().join("") === "ruby|") {
+                                if(text.reverse().join("") === "ruby|"){
                                     return true;
                                 }
                                 return false;
@@ -203,7 +214,7 @@ $(() => {
                                             return item.surface;
                                         }).join("");
                                     }
-                                    if(diffruby(wordList, num)){
+                                    if(diffruby(num)){
                                         return item.surface;
                                     }
                                     return ruby(item.surface, item.furigana);
@@ -215,16 +226,16 @@ $(() => {
                              */
                             function rubyReplace(patterns) {
                                 for (let i = 0, len = patterns.length; i < len; i++) {
-                                    const regex = new RegExp(`(\\{\\{photrans\\|${patterns[i][0]}\\|)${patterns[i][1]}\\}\\}`, "g");
-                                    result = result.replace(regex, `$1${patterns[i][2]}}}`);
+                                    const regex = new RegExp(`(\\{\\{photrans\\|${ patterns[i][0] }\\|)${ patterns[i][1] }\\}\\}`, "g");
+                                    result = result.replace(regex, `$1${ patterns[i][2] }}}`);
                                 }
                             }
                             rubyReplace(common);
-                            $("#ruby-kakikotoba").prop("checked") && rubyReplace(kakikotoba);
-
-                            this.lefttext = result.replace(/!UNICODE\((.+?)\)/g, (s, s1) => unescape(s1.replace("#", "%")));
-                            $(".ruby-view").html(result.replace(/\n/g, "<br>").replace(/\{\{photrans\|(.+?)\|(.+?)\}\}/g, "<ruby>$1<rt>$2</rt></ruby>"));
-                            $("#ruby-update").removeAttr("disabled");
+                            this.checkbox.ifkakikotoba && rubyReplace(kakikotoba);
+                            result = result.replace(/!UNICODE\((.+?)\)/g, (_, s) => unescape(s.replace("#", "%")) );
+                            this.lefttext = result;
+                            $(".ruby-view").html(result.replace(/\n/g, "<br>").replace(/\{\{(photrans|ruby)\|(.+?)\|(.+?)\}\}/g, "<ruby>$2<rt>$3</rt></ruby>"));
+                            this.disupdate = false, this.diskakikotoba = false;
                         }
                     }).fail(() => {
                         mw.notify(messages.timeout, { type: "error" });
