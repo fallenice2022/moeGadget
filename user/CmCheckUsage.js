@@ -27,7 +27,7 @@
     }
     /**
      * @param {string} sitename
-     * @param {array} pages
+     * @param {object[]} pages
      */
     function notify(sitename, pages){
         const sitezhname = sitename==="en"? wgULS("于嘤萌","於嚶萌"): wgULS("于日萌","於日萌");
@@ -36,7 +36,7 @@
         if (typeof pages["-1"] === "undefined") {
             result = `笨蛋，此${wgULS("页面不是文件！","頁面不是檔案！")}`;
         } else if (typeof pages["-1"].fileusage !== "undefined") {
-            result = `不好！${wgULS("文件","檔案") + PageName + sitezhname + wgULS("有链入的说。","有連入的說。") }<a href="https://${sitename}.moegirl.org.cn/Special:WhatLinksHere/${PageName}">${wgULS("查看链入","查看連入")}</a>`;
+            result = `不好！${wgULS("文件","檔案")}${PageName}${sitezhname}${wgULS("有链入的说。","有連入的說。")}<a href="https://${sitename}.moegirl.org.cn/Special:WhatLinksHere/${PageName}">${wgULS("查看链入","查看連入")}</a>`;
             type = "warn";
         } else {
             result = wgULS("内个呢，文件","內个呢，檔案") + PageName + sitezhname + wgULS("无链入喵。","無連入喵。");

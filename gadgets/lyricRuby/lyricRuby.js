@@ -28,10 +28,10 @@ $(() => {
                 checkbox: {
                     ifkakikotoba:ref(),
                 },
-                diseditor:false,
-                disupdate:true,
-                diskakikotoba:false,
-                dissigndiff:true,
+                diseditor: false,
+                disupdate: true,
+                diskakikotoba: false,
+                dissigndiff: true,
             };
         },
         //框架
@@ -50,7 +50,7 @@ $(() => {
                 h("span", {}, "书面语注音"),
             ]);
             const editorBody = h("textarea", {
-                id: "ruby-editor-body",
+                id: "ruby-textbox",
                 lang: "ja",
                 value: unref(this.lefttext),
                 onChange: $event => this.lefttext = $event.target.value,
@@ -124,7 +124,7 @@ $(() => {
                         textInput: { placeholder: "写作xx读作oo" },
                     });
                     if (sing !== "") {
-                        this.lefttext = $("#ruby-editor-body").textSelection("encapsulateSelection", {
+                        this.lefttext = $("#ruby-textbox").textSelection("encapsulateSelection", {
                             pre: "{{ruby|",
                             peri: text,
                             post: `|${sing}}}`,
@@ -156,7 +156,7 @@ $(() => {
                 let text = this.lefttext.trim();
                 if (text.length === 0) {
                     mw.notify(messages.emptyText, { type: "error" });
-                } else if (text.search("photrans")){
+                } else if (text.includes("photrans")){
                     mw.notify("那个，您已经完成注音了吧？", { type: "warn" });
                 } else {
                     text = text.replace(escapes, (s) => `!UNICODE(${ escape(s).replace("%", "#") })`);
@@ -180,7 +180,7 @@ $(() => {
                         }),
                         timeout: "15000",
                     }).always(() => {
-                        this.diseditor = false;
+                        this.diseditor = false, this.diskakikotoba = false;
                     }).done((data) => {
                         if (data.Error) {
                             mw.notify(messages.badText, { type: "error" });
@@ -235,7 +235,7 @@ $(() => {
                             result = result.replace(/!UNICODE\((.+?)\)/g, (_, s) => unescape(s.replace("#", "%")) );
                             this.lefttext = result;
                             $(".ruby-view").html(result.replace(/\n/g, "<br>").replace(/\{\{(photrans|ruby)\|(.+?)\|(.+?)\}\}/g, "<ruby>$2<rt>$3</rt></ruby>"));
-                            this.disupdate = false, this.diskakikotoba = false;
+                            this.disupdate = false;
                         }
                     }).fail(() => {
                         mw.notify(messages.timeout, { type: "error" });
