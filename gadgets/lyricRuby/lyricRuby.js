@@ -26,7 +26,7 @@ $(() => {
             return {
                 lefttext: ref(""),
                 checkbox: {
-                    ifkakikotoba:ref(),
+                    ifkakikotoba: ref(),
                 },
                 diseditor: false,
                 disupdate: true,
@@ -45,7 +45,7 @@ $(() => {
                     id: "ruby-kakikotoba",
                     checked: this.checkbox.ifkakikotoba,
                     onChange: $event => this.checkbox.ifkakikotoba = $event.target.checked,
-                    disabled:this.diskakikotoba,
+                    disabled: this.diskakikotoba,
                 }),
                 h("span", {}, "书面语注音"),
             ]);
@@ -55,7 +55,7 @@ $(() => {
                 value: unref(this.lefttext),
                 onChange: $event => this.lefttext = $event.target.value,
                 onMouseup: this.openDiffRuby,
-                disabled:this.diseditor,
+                disabled: this.diseditor,
             });
             const btngroup = h("div", { "class": "ruby-btn-group" }, [
                 h("button", {
@@ -67,14 +67,14 @@ $(() => {
                     onClick: this.execute,
                 }, "添加注音"),
                 h("button", {
-                    id:"ruby-update",
+                    id: "ruby-update",
                     title: "将歌词提交至模板",
                     disabled: this.disupdate,
                     onClick: this.upDate,
                 }, "提交歌词"),
                 h("button", {
                     title: "复制歌词至剪切板",
-                    onClick:this.copyText,
+                    onClick: this.copyText,
                 }, "复制歌词"),
                 kakikotoba,
                 h("button", {
@@ -88,10 +88,10 @@ $(() => {
                     },
                 }, "打开转换列表页面"),
                 h("button", {
-                    id:"ruby-sign-diff",
+                    id: "ruby-sign-diff",
                     title: "标注选中文字的特殊读音",
-                    disabled:this.dissigndiff,
-                    onClick:this.diffRuby,
+                    disabled: this.dissigndiff,
+                    onClick: this.diffRuby,
                 }, "特殊读音标记"),
             ]);
             const leftEditor = h("div", {
@@ -112,7 +112,7 @@ $(() => {
         },
         methods: {
             openDiffRuby() {
-                if(window.getSelection().toString() !== "") {
+                if (window.getSelection().toString() !== "") {
                     this.dissigndiff = false;
                 }
             },
@@ -156,10 +156,10 @@ $(() => {
                 let text = this.lefttext.trim();
                 if (text.length === 0) {
                     mw.notify(messages.emptyText, { type: "error" });
-                } else if (text.includes("photrans")){
+                } else if (text.includes("photrans")) {
                     mw.notify("那个，您已经完成注音了吧？", { type: "warn" });
                 } else {
-                    text = text.replace(escapes, (s) => `!UNICODE(${ escape(s).replace("%", "#") })`);
+                    text = text.replace(escapes, (s) => `!UNICODE(${escape(s).replace("%", "#")})`);
                     this.diseditor = true, this.disupdate = true, this.diskakikotoba = true;
                     $.ajax({
                         type: "post",
@@ -190,16 +190,16 @@ $(() => {
                              * 检查是否有额外的ruby模板
                              * @param {number} num
                              */
-                            function diffruby(num){
+                            function diffruby(num) {
                                 const text = [];
                                 for (let i = 1; i < 3; i++) {
-                                    if(num - i > 2){
-                                        text.push(wordList[num-i].surface);
+                                    if (num - i > 2) {
+                                        text.push(wordList[num - i].surface);
                                     } else {
                                         break;
                                     }
                                 }
-                                if(text.reverse().join("") === "ruby|"){
+                                if (text.reverse().join("") === "ruby|") {
                                     return true;
                                 }
                                 return false;
@@ -208,13 +208,13 @@ $(() => {
                                 if (item.furigana) {
                                     if (item.subword) {
                                         return item.subword.map((item) => {
-                                            if(item.furigana !== item.surface){
+                                            if (item.furigana !== item.surface) {
                                                 return ruby(item.surface, item.furigana);
                                             }
                                             return item.surface;
                                         }).join("");
                                     }
-                                    if(diffruby(num)){
+                                    if (diffruby(num)) {
                                         return item.surface;
                                     }
                                     return ruby(item.surface, item.furigana);
@@ -226,13 +226,13 @@ $(() => {
                              */
                             function rubyReplace(patterns) {
                                 for (let i = 0, len = patterns.length; i < len; i++) {
-                                    const regex = new RegExp(`(\\{\\{photrans\\|${ patterns[i][0] }\\|)${ patterns[i][1] }\\}\\}`, "g");
-                                    result = result.replace(regex, `$1${ patterns[i][2] }}}`);
+                                    const regex = new RegExp(`(\\{\\{photrans\\|${patterns[i][0]}\\|)${patterns[i][1]}\\}\\}`, "g");
+                                    result = result.replace(regex, `$1${patterns[i][2]}}}`);
                                 }
                             }
                             rubyReplace(common);
                             this.checkbox.ifkakikotoba && rubyReplace(kakikotoba);
-                            result = result.replace(/!UNICODE\((.+?)\)/g, (_, s) => unescape(s.replace("#", "%")) );
+                            result = result.replace(/!UNICODE\((.+?)\)/g, (_, s) => unescape(s.replace("#", "%")));
                             this.lefttext = result;
                             $(".ruby-view").html(result.replace(/\n/g, "<br>").replace(/\{\{(photrans|ruby)\|(.+?)\|(.+?)\}\}/g, "<ruby>$2<rt>$3</rt></ruby>"));
                             this.disupdate = false;
