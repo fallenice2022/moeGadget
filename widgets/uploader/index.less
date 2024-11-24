@@ -1,0 +1,333 @@
+.container {
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.3);
+    z-index: 100;
+}
+
+.closeBtn {
+    font-size: 30;
+    font-weight: bold;
+    color: white;
+    font-family: Simsun;
+    position: fixed;
+    top: 10;
+    right: 20;
+    transition: transform 0.3s;
+    z-index: 10001;
+    cursor: pointer;
+
+    &:hover {
+        transform: rotate(90deg);
+    }
+}
+
+.body {
+    min-width: 800;
+    max-width: 930;
+    height: 500;
+    background-color: white;
+    border-radius: 10;
+    border: 5px #eee solid;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+}
+
+.fileList {
+    height: 70%;
+    background-color: white;
+    border-radius: 10px 10px 0 0;
+    position: relative;
+    border-bottom: 3px #ccc solid;
+    box-sizing: border-box;
+    overflow: auto;
+    cursor: pointer;
+    padding-bottom: 10;
+
+    & .hintMask {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+
+        &::before,
+        &::after {
+            content: '""';
+            width: 40;
+            height: 150;
+            background-color: #ddd;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            margin: auto;
+
+        }
+
+        &::after {
+            width: 150;
+            height: 40;
+        }
+
+        &>.hintText {
+            font-size: 22;
+            color: #ddd;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: 30;
+            white-space: nowrap;
+        }
+    }
+
+    &>.item {
+        width: 200;
+        height: 150;
+        box-sizing: border-box;
+        background-color: white;
+        margin-left: 10;
+        margin-top: 10;
+        border: 1px #ccc solid;
+        display: inline-block;
+        position: relative;
+        cursor: pointer;
+        vertical-align: middle;
+
+        & .addFileBox {
+
+            &::before,
+            &::after {
+                content: '""';
+                width: 15;
+                height: 60;
+                background-color: #ddd;
+                position: absolute;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                right: 0;
+                margin: auto;
+
+            }
+
+            &::after {
+                width: 60;
+                height: 15;
+            }
+        }
+
+        & [data-selected="true"] {
+            border-color: #4EBE8C;
+
+            &::after {
+                content: '""';
+                display: block;
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                top: 0;
+                left: 0;
+                box-sizing: border-box;
+                border: 3px #4EBE8C solid;
+                pointer-events: none;
+
+            }
+        }
+
+        &::before {
+            content: attr(data-name);
+            display: block;
+            width: 100%;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            font-size: 13;
+            text-align: center;
+            line-height: 25px;
+            overflow: hidden;
+            height: 25;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            box-sizing: border-box;
+            padding: 0 10px;
+
+        }
+
+        &>img {
+            width: 100%;
+            height: 100%;
+            padding: 5;
+            box-sizing: border-box;
+            object-fit: scale-down;
+
+        }
+
+        &>.unablePreviewHint {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: #666;
+            font-size: 13;
+
+            &>.type {
+                width: 80%;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+
+            }
+        }
+
+        &>.removeBtn {
+            width: 20;
+            height: 20;
+            border-radius: 50%;
+            text-Align: center;
+            line-height: 20px;
+            font-Weight: bold;
+            font-family: "黑体";
+            position: absolute;
+            top: 5;
+            right: 5;
+
+            &:hover {
+                background-color: #666;
+                color: white;
+            }
+        }
+    }
+}
+
+.panel {
+    height: 30%;
+    padding: 10;
+    box-sizing: border-box;
+    display: flex;
+
+    &>.block {
+        display: flex;
+        flex: 1;
+        flex-wrap: wrap;
+        align-items: center;
+        height: 100%;
+        padding: 0 10px;
+
+        & .input-container {
+            min-width: 240;
+            position: relative;
+
+            &>* {
+                vertical-align: middle;
+                font-size: 14;
+            }
+
+            &>input {
+                box-sizing: border-box;
+                width: calc(100% - 5em);
+                min-width: 150;
+            }
+        }
+    }
+
+    & .categoryInput {
+        position: relative;
+
+        & .inputHint {
+            opacity: 0;
+            transition: opacity 0.2s;
+            background-color: #fffeee;
+            border: 1px #ccc solid;
+            padding: 2px 10px;
+            position: absolute;
+            bottom: calc(100% - 7px);
+            left: calc(100% - 7px);
+            z-index: 1;
+            border-radius: 5;
+            white-space: nowrap;
+
+        }
+
+        &>input:focus+.inputHint {
+            opacity: 1,
+        }
+    }
+
+    & .categoryHints {
+        min-width: 170;
+        max-height: 140;
+        background-color: white;
+        white-space: nowrap;
+        overflow: auto;
+        position: absolute;
+        right: 9;
+        bottom: 100%;
+        border: 1px #666 solid;
+        box-sizing: border-box;
+        border-bottom: none;
+        display: flex;
+        flex-direction: column-reverse;
+
+
+        &>.item {
+            min-height: 20;
+            line-height: 20px;
+            box-sizing: border-box;
+            padding: 0 5px;
+            width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            cursor: pointer;
+
+            & [data-selected="true"] {
+                background-color: #ccc;
+            }
+        }
+    }
+
+    & .categories {
+        width: 100%;
+        height: 23;
+        border: 1px #ccc solid;
+        border-radius: 5;
+        overflow: auto;
+        margin-right: 5;
+        box-sizing: border-box;
+
+
+        &>.item {
+            display: inline-block;
+            line-height: 15px;
+            text-align: center;
+            border: 1px #666 solid;
+            background-color: #eee;
+            margin: 2px 3px;
+            padding: 0 5px;
+            font-size: 14;
+            cursor: pointer;
+
+        }
+    }
+
+    & .buttons {
+        width: 100%;
+
+        &>button {
+            margin-top: 5;
+        }
+    }
+}

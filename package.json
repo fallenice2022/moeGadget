@@ -2,6 +2,7 @@
   "dependencies": {
     "@types/oojs-ui": "^0.47.3",
     "eslint": "^8.57.0",
-    "types-mediawiki": "^1.4.0"
+    "types-mediawiki": "^1.8.0",
+    "vue": "^3.2.0"
   }
 }
